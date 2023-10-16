@@ -116,26 +116,29 @@ const setupRealisticGlobe = (globe) => {
 
 const setupPrecipitation = (globe) => {
 	const weightColor = d3.scaleLinear()
-		.domain([0, 60])
-		.range(['lightgreen', 'orange'])
+		.domain([0, 12, 25])
+		.range(['lightgreen', 'orange', 'yellow'])
 		.clamp(true);
+	
+	const hexBarColor = (sumWeight) => {
+		return 'yellow'
+	}
 
 	const altitude = { value: 0.00 }
 
 	const onDataLoaded = () => {
 		gsap.to(altitude, {
-			value: 0.0025,
-			duration: 0.5, 
-			ease: "power2.out",
+			value: 25,
+			duration: 1, 
+			ease: "elastic.in(2, 100)",
 			onUpdate: () => {
-				console.log(altitude.value)
-				const val = altitude.value
+				const val = altitude.value / 10000
 				globe.hexBinPointsData([])
-				.hexAltitude(({ sumWeight }) => sumWeight * val > 0.08 ? 0.15 : sumWeight * val)
+				.hexAltitude(({ sumWeight }) => sumWeight * val > 0.20 ? 0.20 : sumWeight * val)
 				globe.hexBinPointsData(earthquakeData.features);
 			},
 			yoyo: true,
-			repeat: 20
+			repeat: 200
 		})
 	}
 
@@ -256,7 +259,7 @@ const onDocumentMouseDown = () => {
 	if (!globe) {
 		return;
 	}
-	gsap.to(globe.scale, { x: 0.95, y: 0.9, z: 0.9, duration: 0.3, ease: "power2.out" });
+	gsap.to(globe.scale, { x: 0.96, y: 0.96, z: 0.96, duration: 0.3, ease: "power2.out" });
 };
 
 const onDocumentMouseUp = () => {
