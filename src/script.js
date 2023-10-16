@@ -1,16 +1,13 @@
 import * as THREE from 'three';
 import * as d3 from 'd3';
-import * as gsap from 'gsap';
+import gsap from 'gsap';
 import ThreeGlobe from 'three-globe';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 let width = 1200;
 let height = 800;
 
-let baseUrl = './'
+let baseUrl = 'https://devesh2997.github.io/globe/'
 
-if(window.location.host.includes('github')){
-	baseUrl = '/globe/'
-}
 
 const mouse = new THREE.Vector2();
 let mouseLight;
