@@ -38,7 +38,7 @@ const getPolygonColor = () => {
 }
 
 const setupClouds = (scene, globe) => {
-	const CLOUDS_IMG_URL = '../public/clouds.png'; // from https://github.com/turban/webgl-earth
+	const CLOUDS_IMG_URL = baseUrl+'public/clouds.png'; // from https://github.com/turban/webgl-earth
 	const CLOUDS_ALT = 0.08;
 	const CLOUDS_ROTATION_SPEED = -0.008; // deg/frame
 
@@ -73,7 +73,7 @@ const setupHexGlobe = (globe) => {
 		specular: 0xffffff, // color of the specular reflection
 	});
 	;
-	fetch('../public/countries.geo.json').then((response) => response.json()).then((countries) => {
+	fetch(baseUrl+'public/countries.geo.json').then((response) => response.json()).then((countries) => {
 		globe.hexPolygonsData(countries.features)
 			.hexPolygonResolution(3)
 			.hexPolygonMargin(0.3)
