@@ -120,7 +120,25 @@ const setupPrecipitation = (globe) => {
 		.range(['lightgreen', 'orange'])
 		.clamp(true);
 
-	const altitude = { val: 0.00 }
+	const altitude = { value: 0.00 }
+
+	const onDataLoaded = () => {
+		gsap.to(altitude, {
+			value: 0.0025,
+			duration: 0.5, 
+			ease: "power2.out",
+			onUpdate: () => {
+				console.log(altitude.value)
+				const val = altitude.value
+				globe.hexBinPointsData([])
+				.hexAltitude(({ sumWeight }) => sumWeight * val > 0.08 ? 0.15 : sumWeight * val)
+				globe.hexBinPointsData(earthquakeData.features);
+			},
+			yoyo: true,
+			repeat: 20
+		})
+	}
+
 	let earthquakeData;
 	globe
 		.hexBinPointLat(d => d.geometry.coordinates[1])
@@ -135,16 +153,19 @@ const setupPrecipitation = (globe) => {
 	fetch('//earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_month.geojson').then(res => res.json()).then(
 		equakes => {
 			earthquakeData = equakes
-			globe.hexBinPointsData(equakes.features);
+			onDataLoaded()
 		}
 	);
 
-	setInterval(() => {
-		globe.hexBinPointsData([])
-		setTimeout(() => {
-			globe.hexBinPointsData(earthquakeData.features);
-		}, 200)
-	}, 4000)
+
+	
+
+	// setInterval(() => {
+	// 	globe.hexBinPointsData([])
+	// 	setTimeout(() => {
+	// 		globe.hexBinPointsData(earthquakeData.features);
+	// 	}, 200)
+	// }, 4000)
 
 }
 
@@ -174,7 +195,9 @@ const setupGlobe = (scene) => {
 		repeatPeriod: 500
 	}));
 	const colorInterpolator = (t) => `rgba(255,100,50,${1 - t})`;
-	const globe = new ThreeGlobe()
+	const globe = new ThreeGlobe({
+		animateIn: false
+	})
 	setupHexGlobe(globe)
 	// setupRealisticGlobe(globe)
 	globe.ringsData(ringsData)
@@ -210,14 +233,14 @@ const setupLighting = (scene, globe) => {
 	mouseLight.position.z = 150;
 	scene.add(mouseLight);
 	const sphereSize = 1;
-	const pointLightHelper = new THREE.PointLightHelper(mouseLight, sphereSize);
-	scene.add(pointLightHelper);
+	// const pointLightHelper = new THREE.PointLightHelper(mouseLight, sphereSize);
+	// scene.add(pointLightHelper);
 
 	const light1 = new THREE.PointLight(0xffffff, 1000, 100); // Red light
 	light1.position.set(80, 80, 80);
 	scene.add(light1);
-	const pointLightHelper1 = new THREE.PointLightHelper(light1, 4);
-	scene.add(pointLightHelper1);
+	// const pointLightHelper1 = new THREE.PointLightHelper(light1, 4);
+	// scene.add(pointLightHelper1);
 
 	const light2 = new THREE.PointLight(0xffffff, 1000, 100); // Green light
 	light2.position.set(-80, -80, 80);
