@@ -2,6 +2,12 @@ import { OrbitControls } from '//unpkg.com/three/examples/jsm/controls/OrbitCont
 let width = 1200;
 let height = 800;
 
+let baseUrl = './'
+
+if(window.location.host.includes('github')){
+	baseUrl = '/globe/'
+}
+
 const mouse = new THREE.Vector2();
 let mouseLight;
 
@@ -96,11 +102,11 @@ const setupGlassShield = (scene, globe) => {
 }
 
 const setupRealisticGlobe = (globe) => {
-	globe.globeImageUrl('./public/globe/earth-blue-marble.jpg')
-		.bumpImageUrl('./public/globe/earth-topology.png');
+	globe.globeImageUrl(baseUrl+'public/globe/earth-blue-marble.jpg')
+		.bumpImageUrl(baseUrl+'public/globe/earth-topology.png');
 	let globeMaterial = globe.globeMaterial();
 	globeMaterial.bumpScale = 10;
-	new THREE.TextureLoader().load('./public/globe/earth-water.png', texture => {
+	new THREE.TextureLoader().load(baseUrl+'public/globe/earth-water.png', texture => {
 		globeMaterial.specularMap = texture;
 		globeMaterial.specular = new THREE.Color('grey');
 		globeMaterial.shininess = 15;
