@@ -68,7 +68,7 @@ const setupHexGlobe = (globe) => {
 	// const globeMaterial = new THREE.MeshBasicMaterial({ color: '#ffffff' })
 	// const globeMaterial = new THREE.MeshBasicMaterial({ color: '#201df1' })
 	const globeMaterial = new THREE.MeshPhongMaterial({
-		color: 0x007BFF, // choose a color you like
+		color: 0x003CFF, // choose a color you like
 		shininess: 10, // adjust for desired shininess
 		specular: 0xffffff, // color of the specular reflection
 	});
@@ -138,7 +138,7 @@ const setupPrecipitation = (globe) => {
 				globe.hexBinPointsData(earthquakeData.features);
 			},
 			yoyo: true,
-			repeat: 200
+			repeat: 20000
 		})
 	}
 
@@ -207,7 +207,7 @@ const setupGlobe = (scene) => {
 		.ringColor(() => colorInterpolator)
 		.ringMaxRadius('maxR')
 		.ringPropagationSpeed('propagationSpeed')
-		.ringAltitude(0.01)
+		.ringAltitude(0.05)
 		.ringRepeatPeriod('repeatPeriod');
 
 	setupPrecipitation(globe)
