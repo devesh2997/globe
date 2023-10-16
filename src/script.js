@@ -1,4 +1,8 @@
-import { OrbitControls } from '//unpkg.com/three/examples/jsm/controls/OrbitControls.js';
+import * as THREE from 'three';
+import * as d3 from 'd3';
+import * as gsap from 'gsap';
+import ThreeGlobe from 'three-globe';
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
 let width = 1200;
 let height = 800;
 
@@ -37,7 +41,7 @@ const getPolygonColor = () => {
 }
 
 const setupClouds = (scene, globe) => {
-	const CLOUDS_IMG_URL = './public/globe/clouds.png'; // from https://github.com/turban/webgl-earth
+	const CLOUDS_IMG_URL = '../public/clouds.png'; // from https://github.com/turban/webgl-earth
 	const CLOUDS_ALT = 0.08;
 	const CLOUDS_ROTATION_SPEED = -0.008; // deg/frame
 
@@ -72,7 +76,7 @@ const setupHexGlobe = (globe) => {
 		specular: 0xffffff, // color of the specular reflection
 	});
 	;
-	fetch('./public/globe/countries.geo.json').then((response) => response.json()).then((countries) => {
+	fetch('../public/countries.geo.json').then((response) => response.json()).then((countries) => {
 		globe.hexPolygonsData(countries.features)
 			.hexPolygonResolution(3)
 			.hexPolygonMargin(0.3)
@@ -102,11 +106,11 @@ const setupGlassShield = (scene, globe) => {
 }
 
 const setupRealisticGlobe = (globe) => {
-	globe.globeImageUrl(baseUrl+'public/globe/earth-blue-marble.jpg')
-		.bumpImageUrl(baseUrl+'public/globe/earth-topology.png');
+	globe.globeImageUrl(baseUrl+'public/earth-blue-marble.jpg')
+		.bumpImageUrl(baseUrl+'public/earth-topology.png');
 	let globeMaterial = globe.globeMaterial();
 	globeMaterial.bumpScale = 10;
-	new THREE.TextureLoader().load(baseUrl+'public/globe/earth-water.png', texture => {
+	new THREE.TextureLoader().load(baseUrl+'public/earth-water.png', texture => {
 		globeMaterial.specularMap = texture;
 		globeMaterial.specular = new THREE.Color('grey');
 		globeMaterial.shininess = 15;
