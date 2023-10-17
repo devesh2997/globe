@@ -38,7 +38,7 @@ const getPolygonColor = () => {
 }
 
 const setupClouds = (scene, globe) => {
-	const CLOUDS_IMG_URL = baseUrl+'public/clouds.png'; // from https://github.com/turban/webgl-earth
+	const CLOUDS_IMG_URL = baseUrl + 'public/clouds.png'; // from https://github.com/turban/webgl-earth
 	const CLOUDS_ALT = 0.08;
 	const CLOUDS_ROTATION_SPEED = -0.008; // deg/frame
 
@@ -73,7 +73,7 @@ const setupHexGlobe = (globe) => {
 		specular: 0xffffff, // color of the specular reflection
 	});
 	;
-	fetch(baseUrl+'public/countries.geo.json').then((response) => response.json()).then((countries) => {
+	fetch(baseUrl + 'public/countries.geo.json').then((response) => response.json()).then((countries) => {
 		globe.hexPolygonsData(countries.features)
 			.hexPolygonResolution(3)
 			.hexPolygonMargin(0.3)
@@ -103,11 +103,11 @@ const setupGlassShield = (scene, globe) => {
 }
 
 const setupRealisticGlobe = (globe) => {
-	globe.globeImageUrl(baseUrl+'public/earth-blue-marble.jpg')
-		.bumpImageUrl(baseUrl+'public/earth-topology.png');
+	globe.globeImageUrl(baseUrl + 'public/earth-blue-marble.jpg')
+		.bumpImageUrl(baseUrl + 'public/earth-topology.png');
 	let globeMaterial = globe.globeMaterial();
 	globeMaterial.bumpScale = 10;
-	new THREE.TextureLoader().load(baseUrl+'public/earth-water.png', texture => {
+	new THREE.TextureLoader().load(baseUrl + 'public/earth-water.png', texture => {
 		globeMaterial.specularMap = texture;
 		globeMaterial.specular = new THREE.Color('grey');
 		globeMaterial.shininess = 15;
@@ -115,31 +115,82 @@ const setupRealisticGlobe = (globe) => {
 }
 
 const setupPrecipitation = (globe) => {
-	const weightColor = d3.scaleLinear()
-		.domain([0, 12, 25])
-		.range(['lightgreen', 'orange', 'yellow'])
-		.clamp(true);
-	
+
 	const hexBarColor = (sumWeight) => {
 		return 'yellow'
 	}
 
 	const altitude = { value: 0.00 }
 
+	const numBins = 6
+	let currentBin = 0;
+
+	// const weightColor = d3.scaleLinear()
+	// 	.domain([0, 20, 25])
+	// 	.range(['#F4F7FE', '#9A7AFF', '#05CD99'])
+	// 	.clamp(true);
+
+	const weightColor = () => {
+		switch (currentBin % 3) {
+			case 0:
+				return '#F4F7FE'
+			case 1:
+				return '#9A7AFF'
+			case 2:
+				return '#05CD99'
+			default:
+				'yellow';
+		}
+	}
+
+	const createBins = (arr, n) => {
+		// Check if the array or n is not valid
+		if (!Array.isArray(arr) || n <= 0) {
+			return [];
+		}
+
+		// Initialize bins with empty arrays
+		let bins = Array.from({ length: n }).map(() => []);
+
+		// Distribute the elements of the array into the bins
+		for (let i = 0; i < arr.length; i++) {
+			bins[i % n].push(arr[i]);
+		}
+
+		return bins;
+	}
+
+	const getFeatureBin = () => {
+		const bins = createBins(earthquakeData.features, numBins)
+		const bin = bins[currentBin];
+
+		return bin
+	}
+
 	const onDataLoaded = () => {
+		const bin = getFeatureBin()
+		if (currentBin >= numBins - 1) {
+			currentBin = 0;
+		} else {
+			currentBin += 1;
+		}
 		gsap.to(altitude, {
-			value: 25,
-			duration: 1, 
+			value: 40,
+			duration: 1,
 			ease: "elastic.in(2, 100)",
 			onUpdate: () => {
 				const val = altitude.value / 10000
 				globe.hexBinPointsData([])
-				.hexAltitude(({ sumWeight }) => sumWeight * val > 0.20 ? 0.20 : sumWeight * val)
-				globe.hexBinPointsData(earthquakeData.features);
+					.hexAltitude(({ sumWeight }) => sumWeight * val > 0.20 ? 0.20 : sumWeight * val)
+				globe.hexBinPointsData(getFeatureBin());
+			},
+			onComplete: () => {
+				onDataLoaded()
 			},
 			yoyo: true,
-			repeat: 20000
+			repeat: 1
 		})
+
 	}
 
 	let earthquakeData;
@@ -147,8 +198,8 @@ const setupPrecipitation = (globe) => {
 		.hexBinPointLat(d => d.geometry.coordinates[1])
 		.hexBinPointLng(d => d.geometry.coordinates[0])
 		.hexBinPointWeight(d => d.properties.mag)
-		.hexBinResolution(3.8)
-		.hexAltitude(({ sumWeight }) => sumWeight * 0.0025 > 0.08 ? 0.15 : sumWeight * 0.0025)
+		.hexBinResolution(3)
+		.hexAltitude(({ sumWeight }) => sumWeight * 0.004 > 0.25 ? 0.25 : sumWeight * 0.004)
 		.hexTopColor(d => weightColor(d.sumWeight))
 		.hexSideColor(d => weightColor(d.sumWeight))
 		.hexTransitionDuration(0)
@@ -161,7 +212,7 @@ const setupPrecipitation = (globe) => {
 	);
 
 
-	
+
 
 	// setInterval(() => {
 	// 	globe.hexBinPointsData([])
@@ -239,17 +290,17 @@ const setupLighting = (scene, globe) => {
 	// const pointLightHelper = new THREE.PointLightHelper(mouseLight, sphereSize);
 	// scene.add(pointLightHelper);
 
-	const light1 = new THREE.PointLight(0xffffff, 1000, 100); // Red light
+	const light1 = new THREE.PointLight(0xffffff, 600, 100); // Red light
 	light1.position.set(80, 80, 80);
 	scene.add(light1);
 	// const pointLightHelper1 = new THREE.PointLightHelper(light1, 4);
 	// scene.add(pointLightHelper1);
 
-	const light2 = new THREE.PointLight(0xffffff, 1000, 100); // Green light
+	const light2 = new THREE.PointLight(0xffffff, 600, 100); // Green light
 	light2.position.set(-80, -80, 80);
 	scene.add(light2);
 
-	const light3 = new THREE.PointLight(0xffffff, 1000, 100); // Blue light
+	const light3 = new THREE.PointLight(0xffffff, 600, 100); // Blue light
 	light3.position.set(80, -80, -80);
 	scene.add(light3);
 }
